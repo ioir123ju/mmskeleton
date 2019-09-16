@@ -65,41 +65,45 @@ def stgcn_visualize(pose,
                 new_y = int(pos_track[m][1] + (pos[1] - pos_track[m][1]) * 0.2)
                 pos_track[m] = (new_x, new_y)
             cv2.putText(text, body_label, pos_track[m],
-                        cv2.FONT_HERSHEY_TRIPLEX, 0.5 * scale_factor,
+                        cv2.FONT_HERSHEY_TRIPLEX, 0.2 * scale_factor,
                         (255, 255, 255))
 
+        skeleton_result = skeleton.astype(float) * 0.25
+        rgb_result = frame.astype(float) * 0.5
+
         # generate mask
-        mask = frame * 0
-        feature = np.abs(feature)
-        feature = feature / feature.mean()
-        for m in range(M):
-            score = pose[2, t, :, m].max()
-            if score < 0.3:
-                continue
-
-            f = feature[t // 4, :, m]**5
-            if f.mean() != 0:
-                f = f / f.mean()
-            for v in range(V):
-                x = pose[0, t, v, m]
-                y = pose[1, t, v, m]
-                if x + y == 0:
+        if feature is not None:
+            mask = frame * 0
+            feature = np.abs(feature)
+            feature = feature / feature.mean()
+            for m in range(M):
+                score = pose[2, t, :, m].max()
+                if score < 0.3:
                     continue
-                else:
-                    x = int((x + 0.5) * W)
-                    y = int((y + 0.5) * H)
-                cv2.circle(mask, (x, y), 0, (255, 255, 255),
-                           int(np.ceil(f[v]**0.5 * 8 * scale_factor)))
-        blurred_mask = cv2.blur(mask, (12, 12))
 
-        skeleton_result = blurred_mask.astype(float) * 0.75
-        skeleton_result += skeleton.astype(float) * 0.25
+                f = feature[t // 4, :, m]**5
+                if f.mean() != 0:
+                    f = f / f.mean()
+                for v in range(V):
+                    x = pose[0, t, v, m]
+                    y = pose[1, t, v, m]
+                    if x + y == 0:
+                        continue
+                    else:
+                        x = int((x + 0.5) * W)
+                        y = int((y + 0.5) * H)
+                    cv2.circle(mask, (x, y), 0, (255, 255, 255),
+                               int(np.ceil(f[v]**0.5 * 8 * scale_factor)))
+            blurred_mask = cv2.blur(mask, (12, 12))
+
+            skeleton_result += blurred_mask.astype(float) * 0.75
+            rgb_result += blurred_mask.astype(float) * 0.75
+
         skeleton_result += text.astype(float)
         skeleton_result[skeleton_result > 255] = 255
         skeleton_result.astype(np.uint8)
 
-        rgb_result = blurred_mask.astype(float) * 0.75
-        rgb_result += frame.astype(float) * 0.5
+
         rgb_result += skeleton.astype(float) * 0.25
         rgb_result[rgb_result > 255] = 255
         rgb_result.astype(np.uint8)
