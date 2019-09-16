@@ -72,6 +72,7 @@ def parse_cfg():
 
 
 def main():
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     cfg = parse_cfg()
     call_obj(**cfg.processor_cfg)
 
