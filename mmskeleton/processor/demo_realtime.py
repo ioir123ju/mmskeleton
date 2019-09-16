@@ -40,7 +40,7 @@ def test(model_cfg, dataset_cfg, checkpoint, batch_size=64, gpus=1, workers=4):
     # pose_tracker = naive_pose_tracker()
     #
 
-    video_capture = cv2.VideoCapture("mmskeleton/deprecated/st_gcn/resource/media/clean_and_jerk.mp4")
+    video_capture = cv2.VideoCapture("mmskeleton/deprecated/st_gcn/resource/media/skateboarding.mp4")
     # video_capture = cv2.VideoCapture("fall01.mp4")
     pose_tracker = naive_pose_tracker()
     # start recognition
@@ -213,6 +213,10 @@ class naive_pose_tracker():
             d = trace[-end:]
             beg = end - len(d)
             data[:, beg:end, :, trace_index] = d.transpose((2, 0, 1))
+            print("--:", beg, "--:", end, "--", d)
+            print(d.transpose((2, 0, 1)))
+            print("---------------------------------")
+            print(data.shape)
 
         return data
 
