@@ -36,12 +36,8 @@ def test(model_cfg, dataset_cfg, checkpoint, batch_size=64, gpus=1, workers=4):
     opWrapper.configure(params)
     opWrapper.start()
 
-    # self.model.eval()
-    # pose_tracker = naive_pose_tracker()
-    #
-
-    video_capture = cv2.VideoCapture("mmskeleton/deprecated/st_gcn/resource/media/clean_and_jerk.mp4")
-    # video_capture = cv2.VideoCapture("fall01.mp4")
+    # video_capture = cv2.VideoCapture("mmskeleton/deprecated/st_gcn/resource/media/clean_and_jerk.mp4")
+    video_capture = cv2.VideoCapture("fall01.mp4")
     pose_tracker = naive_pose_tracker()
     # start recognition
     start_time = time.time()
@@ -71,10 +67,6 @@ def test(model_cfg, dataset_cfg, checkpoint, batch_size=64, gpus=1, workers=4):
         opWrapper.emplaceAndPop([datum])
 
         multi_pose = datum.poseKeypoints  # (num_person, num_joint, 3)
-        # print(np.floor(multi_pose))
-        # cv2.imshow("OpenPose 1.5.1 - Tutorial Python API", fff)
-        # cv2.waitKey(0)
-
 
         # orig_image = cv2.resize(orig_image, (768, 1024))
         # cv2.imshow("orig_image-GCN", orig_image)
@@ -116,7 +108,7 @@ def test(model_cfg, dataset_cfg, checkpoint, batch_size=64, gpus=1, workers=4):
         print(gt_labels[voting_label])
         print(output[0][voting_label])
         app_fps = 1 / (time.time() - tic)
-        image = render(edge, data_numpy, "fall_down",
+        image = render(edge, data_numpy, gt_labels[voting_label],
                             [[gt_labels[voting_label]]], None, orig_image, app_fps)
         cv2.imshow("ST-GCN", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
