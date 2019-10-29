@@ -8,7 +8,7 @@ import torch
 import logging
 import numpy as np
 from mmskeleton.utils import call_obj, import_obj, load_checkpoint
-import mmskeleton.deprecated.st_gcn.tools.utils as utils
+import deprecated.origin_stgcn_repo.tools.utils as utils
 from mmcv.parallel import MMDataParallel
 
 

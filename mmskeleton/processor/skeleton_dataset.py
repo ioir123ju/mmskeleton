@@ -31,6 +31,18 @@ def worker(inputs, results, gpu, detection_cfg, estimation_cfg):
         results.put(res)
 
 
+def get_all_file(dir_path, file_list):
+    for file in os.listdir(dir_path):
+        # print(file)
+        filepath = os.path.join(dir_path, file)
+        # print(filepath)
+        if os.path.isdir(filepath):
+            get_all_file(filepath, file_list)
+        else:
+            file_list.append(filepath)
+    return file_list
+
+
 def build(detection_cfg,
           estimation_cfg,
           tracker_cfg,
@@ -67,11 +79,12 @@ def build(detection_cfg,
         procs.append(p)
         p.start()
 
-    video_file_list = os.listdir(video_dir)
+    video_file_list = []
+    get_all_file(video_dir, video_file_list)
     prog_bar = ProgressBar(len(video_file_list))
-    for video_file in video_file_list:
-
-        reader = mmcv.VideoReader(os.path.join(video_dir, video_file))
+    for video_path in video_file_list:
+        video_file = os.path.basename(video_path)
+        reader = mmcv.VideoReader(video_path)
         video_frames = reader[:video_max_length]
         annotations = []
         num_keypoints = -1

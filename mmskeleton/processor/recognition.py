@@ -35,6 +35,7 @@ def test(model_cfg, dataset_cfg, checkpoint, batch_size=64, gpus=1, workers=4):
         labels.append(label)
         for i in range(len(data)):
             prog_bar.update()
+    print(labels, '--------------')
     results = np.concatenate(results)
     labels = np.concatenate(labels)
 

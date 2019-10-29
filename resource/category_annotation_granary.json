@@ -1,0 +1,21 @@
+{
+    "categories": [
+        "walk",
+        "fall_down",
+        "run"
+    ],
+    "annotations": {
+        "walk1.avi": {
+            "category_id": 0
+        },
+        "walk2.avi": {
+            "category_id": 0
+        },
+        "walk3.avi": {
+            "category_id": 0
+        },
+         "walk4.avi": {
+            "category_id": 0
+        }
+    }
+}

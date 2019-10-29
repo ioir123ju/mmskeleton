@@ -6,8 +6,9 @@ import numpy as np
 import cv2
 from time import time
 from mmcv.utils import ProgressBar
-from .pose_demo import inference as pose_inference
+from mmskeleton.processor.pose_demo import inference as pose_inference
 from mmskeleton.utils import call_obj, load_checkpoint
+import os
 
 
 def init_recognizer(recognition_cfg, device):
@@ -26,7 +27,7 @@ def inference(detection_cfg,
               worker_per_gpu=1,
               save_dir=None):
 
-    recognizer = init_recognizer(recognition_cfg, 0)
+    recognizer = init_recognizer(recognition_cfg, 'cpu')
     # import IPython
     # IPython.embed()
     resolution = mmcv.VideoReader(video_file).resolution
@@ -39,8 +40,19 @@ def inference(detection_cfg,
             seq[0, 0, i, :, 0] = r['joint_preds'][0, :, 0] / resolution[0]
             seq[0, 1, i, :, 0] = r['joint_preds'][0, :, 1] / resolution[1]
             seq[0, 2, i, :, 0] = r['joint_scores'][0, :, 0]
-
-    import IPython
-    IPython.embed()
-
+    #
+    # import IPython
+    # IPython.embed()
+    print('seq:', seq)
     return results
+
+
+def main():
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    cfg = mmcv.Config.fromfile('configs/recognition/st_gcn/dataset_granary/demo.yaml')
+    result = inference(**cfg)
+    print(result)
+
+
+if __name__ == "__main__":
+    main()

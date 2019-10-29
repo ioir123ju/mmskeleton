@@ -1,0 +1,15 @@
+processor_cfg:
+  type: "processor.build_label.build"
+  video_dir: data/action/video/train
+  out_dir: "data/action/"
+
+
+argparse_cfg:
+  video_dir:
+    bind_to: processor_cfg.video_dir
+    help: folder for videos
+
+  out_dir:
+    bind_to: processor_cfg.out_dir
+    help: folder for storing output dataset
+
