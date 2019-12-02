@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @File    :   build_label.py    
-@Contact :   juzheng@hxdi.com
+@Contact :   JZ
 @License :   (C)Copyright 2018-2019, Liugroup-NLPR-CASIA
 
 @Modify Time      @Author    @Version    @Desciption
@@ -15,6 +15,7 @@ import json
 
 
 label_id = dict(walk=0, run=1, fall_down=2, jump=3, squart=4, clean=5)
+label_name = ['walk', 'run', 'fall_down', 'jump', 'squart', 'clean']
 
 
 def build(video_dir, out_dir):
@@ -29,6 +30,6 @@ def build(video_dir, out_dir):
         for file in next(os.walk(action_path))[2]:
             video_dict = dict(category_id=label_id[dir_name])
             annotations[file] = video_dict
-    category_annotattion.update(categories=categories, annotations=annotations)
+    category_annotattion.update(categories=label_name, annotations=annotations)
     with open(os.path.join(out_dir, 'category_annotation_granary' + '.json'), 'w') as f:
         json.dump(category_annotattion, f)

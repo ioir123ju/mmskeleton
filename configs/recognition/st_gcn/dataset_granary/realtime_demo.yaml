@@ -15,9 +15,12 @@ processor_cfg:
   type: "processor.recognition_granary.realtime_detect"
   workers: 16
   checkpoint: ./work_dir/recognition/st_gcn/dataset_granary/latest.pth
-  tracker_cfg: null
+
   video_dir: data/action/video
-  category_annotation: resource/category_annotation_granary.json
+  category_annotation: data/action/category_annotation_granary.json
+
+  tracker_cfg:
+    checkpoint_file: ./checkpoints/ckpt.t7
 
   detection_cfg:
     model_cfg: configs/mmdet/cascade_rcnn_r50_fpn_1x.py
@@ -45,7 +48,7 @@ processor_cfg:
   model_cfg:
     type: "models.backbones.ST_GCN_18"
     in_channels: 3
-    num_class: 3
+    num_class: 6
     edge_importance_weighting: True
     graph_cfg:
       layout: "coco"
@@ -56,7 +59,7 @@ processor_cfg:
     type: "datasets.DataPipeline"
     data_source:
       type: "datasets.SkeletonLoader"
-      data_dir: ./data/action/annotation
+      data_dir: ./data/action/annotation/train
       num_track: 2
       num_keypoints: 17
     pipeline:

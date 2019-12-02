@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @File    :   recognition_granary.py.py    
-@Contact :   juzheng@hxdi.com
+@Contact :   JZ
 @License :   (C)Copyright 2018-2019, Liugroup-NLPR-CASIA
 
 @Modify Time      @Author    @Version    @Desciption
@@ -110,6 +110,18 @@ def draw_body_pose(image, person_pred):
     return image
 
 
+def get_all_file(dir_path, file_list):
+    for file in os.listdir(dir_path):
+        # print(file)
+        filepath = os.path.join(dir_path, file)
+        # print(filepath)
+        if os.path.isdir(filepath):
+            get_all_file(filepath, file_list)
+        else:
+            file_list.append(filepath)
+    return file_list
+
+
 def build(inputs,
           detection_cfg,
           estimation_cfg,
@@ -134,10 +146,13 @@ def build(inputs,
     pose_estimators = init_pose_estimator(
         detection_cfg, estimation_cfg, device=0)
 
-    video_file_list = os.listdir(video_dir)
+    video_file_list = []
+    get_all_file(video_dir, video_file_list)
+
     prog_bar = ProgressBar(len(video_file_list))
-    for video_file in video_file_list:
-        reader = mmcv.VideoReader(os.path.join(video_dir, video_file))
+    for video_path in video_file_list:
+        video_file = os.path.basename(video_path)
+        reader = mmcv.VideoReader(video_path)
         video_frames = reader[:video_max_length]
 
         annotations = []
@@ -244,6 +259,9 @@ def detect(inputs, results, model_cfg, dataset_cfg, checkpoint, video_dir,
 
 def realtime_detect(detection_cfg, estimation_cfg, model_cfg, dataset_cfg, tracker_cfg, video_dir,
                     category_annotation, checkpoint, batch_size=64, gpus=1, workers=4):
+    """
+        初始化
+    """
     # 初始化模型
     pose_estimators = init_pose_estimator(
         detection_cfg, estimation_cfg, device=0)
@@ -257,7 +275,7 @@ def realtime_detect(detection_cfg, estimation_cfg, model_cfg, dataset_cfg, track
     model.eval()
 
     # 获取图像
-    video_file = 'walk3.avi'
+    video_file = 'train/clean/clean10.avi'
     reader = mmcv.VideoReader(os.path.join(video_dir, video_file))
     video_frames = reader[:10000]
 
@@ -310,9 +328,14 @@ def realtime_detect(detection_cfg, estimation_cfg, model_cfg, dataset_cfg, track
             data = data.float().to("cuda:0").detach()
             output = model(data).data.cpu().numpy()
         top1 = output.argmax()
+        if output[:, top1] > 3:
+            label = action_class[top1]
+        else:
+            label = 'unknow'
         print("reslt:", output)
+
         res['render_image'] = render(image, res['joint_preds'],
-                                     action_class[top1],
+                                     label,
                                      res['person_bbox'],
                                      detection_cfg.bbox_thre)
         cv2.imshow('image', image)
